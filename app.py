@@ -14,13 +14,52 @@ AGENT_UUID = os.getenv("AGENT_UUID")
 julep_client = AsyncJulep(api_key=JULEP_API_KEY, environment="dev")
 
 session_id = None
+selected_agent_uuid = None
 
 @cl.on_chat_start
 async def on_chat_start():
-    global session_id
+    global session_id, selected_agent_uuid
+    
+    # Fetch available agents
+    agents = await julep_client.agents.list()
+    agents = agents.items
+    
+    # Create actions for each agent
+    agent_actions = [
+        cl.Action(
+            name=f"agent_{agent.id}", 
+            payload={"agent_id": agent.id}, 
+            label=agent.name or f"Agent {agent.id}",
+            tooltip=agent.id
+        )
+        for agent in agents
+    ]
 
+    agent_actions.insert(0, cl.Action(
+        name="agent_default",
+        payload={"agent_id": AGENT_UUID},
+        label="Default Agent",
+        tooltip=AGENT_UUID
+    ))
+    
+    # Ask user to select an agent
+    res = await cl.AskActionMessage(
+        content="Please select an agent to chat with:",
+        actions=agent_actions,
+    ).send()
+    
+    print(res)
+
+    if res:
+        selected_agent_uuid = res["payload"]["agent_id"]
+    else:
+        # Fallback to default if no selection
+        selected_agent_uuid = AGENT_UUID
+    
+    print(selected_agent_uuid)
+    # Create session with selected agent
     session = await julep_client.sessions.create(
-        agent=AGENT_UUID,
+        agent=selected_agent_uuid,
         system_template=None,
         recall_options={
             "mode": "hybrid",
@@ -34,7 +73,7 @@ async def on_chat_start():
     )
     session_id = session.id
 
-    print("Session created")
+    print(f"Session created with agent: {selected_agent_uuid}")
 
     await cl.Message(content="Hello, how can I help you today?").send()
 
