@@ -77,6 +77,8 @@ Relevant documents (based on website search):
 {%- endif -%}
 {{NEWLINE}}</product>
 {%- endfor -%}
+{%- else -%}
+{{NEWLINE}}No relevant documents found.
 {%- endif -%}
 {{NEWLINE}}Here are your instructions that you should **strictly** follow:
 {%- if agent.instructions %}
