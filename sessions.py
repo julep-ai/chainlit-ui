@@ -5,9 +5,13 @@ dotenv.load_dotenv(override=True)
 
 agent_id = os.getenv("AGENT_UUID")
 
-system_template1 = open("system-templates/system-template-1.jinja").read()
-system_template2 = open("system-templates/system-template-2.jinja").read()
-system_template3 = open("system-templates/system-template-3.jinja").read()
+try:
+    system_template1 = open("system-templates/system-template-1.jinja").read()
+    system_template2 = open("system-templates/system-template-2.jinja").read()
+    system_template3 = open("system-templates/system-template-3.jinja").read()
+except FileNotFoundError as e:
+    raise Exception(f"Required system template file not found: {e.filename}")
+
 session_hybrid_mmr = {
     "agent": agent_id,
     "system_template": None,
