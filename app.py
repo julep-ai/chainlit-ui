@@ -32,20 +32,22 @@ async def on_chat_start():
     ]
     
     # Ask user to select an agent
-    res = await cl.AskActionMessage(
+    search_options_selection_message = cl.AskActionMessage(
         content="Please select the search options you want to use (check the README for more information):",
         actions=agent_actions,
         timeout=SELECTION_TIMEOUT,
-    ).send()
-    
-    print(res)
+    )
 
-    if res:
-        selected_settings = res["payload"]
+    selected_search_options_payload = await search_options_selection_message.send()
+
+    if selected_search_options_payload:
+        selected_search_options = selected_search_options_payload["payload"]
+        # Remove the selection message from UI
+        await search_options_selection_message.remove()
     else:
         # Fallback to default if no selection
-        selected_settings = sessions["Tia (Hybrid + MMR)"]
-    
+        selected_search_options = sessions["Tia (Hybrid + MMR)"]
+
     system_template_actions = [
         cl.Action(
             name=system_template_name,
@@ -55,28 +57,31 @@ async def on_chat_start():
         for system_template_name, system_template_value in system_templates.items()
     ]
 
-    res = await cl.AskActionMessage(
+    template_selection_message = cl.AskActionMessage(
         content="Please select the conversation style you want to use:",
         actions=system_template_actions,
         timeout=SELECTION_TIMEOUT,
-    ).send()
+    )
+    
+    selected_system_template_payload = await template_selection_message.send()
 
-    if res:
-        selected_system_template = res["payload"]["system_template"]
+    if selected_system_template_payload:
+        selected_system_template = selected_system_template_payload["payload"]["system_template"]
+        # Remove the selection message from UI
+        await template_selection_message.remove()
     else:
         selected_system_template = None
-
-    selected_settings["system_template"] = selected_system_template
+    selected_search_options["system_template"] = selected_system_template
 
     # Create session with selected agent
     session = await julep_client.sessions.create(
-        **selected_settings
+        **selected_search_options
     )
     session_id = session.id
 
     print(f"Session created with system template: {selected_system_template}")
-    selected_settings.pop('system_template')
-    print(f"Session settings: {selected_settings}")
+    selected_search_options.pop('system_template')
+    print(f"Session settings: {selected_search_options}")
 
     await cl.Message(content="Hello, how can I help you today?").send()
 
