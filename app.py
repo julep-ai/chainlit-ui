@@ -3,6 +3,7 @@ import chainlit as cl
 from julep import AsyncJulep
 import os
 import dotenv
+from sessions import sessions
 
 dotenv.load_dotenv(override=True)
 
@@ -14,33 +15,20 @@ AGENT_UUID = os.getenv("AGENT_UUID")
 julep_client = AsyncJulep(api_key=JULEP_API_KEY, environment="dev")
 
 session_id = None
-selected_agent_uuid = None
 
 @cl.on_chat_start
 async def on_chat_start():
-    global session_id, selected_agent_uuid
-    
-    # Fetch available agents
-    agents = await julep_client.agents.list()
-    agents = agents.items
+    global session_id
     
     # Create actions for each agent
     agent_actions = [
         cl.Action(
-            name=f"agent_{agent.id}", 
-            payload={"agent_id": agent.id}, 
-            label=agent.name or f"Agent {agent.id}",
-            tooltip=agent.id
+            name=agent_name, 
+            payload=agent_values, 
+            label=agent_name
         )
-        for agent in agents
+        for agent_name, agent_values in sessions.items()
     ]
-
-    agent_actions.insert(0, cl.Action(
-        name="agent_default",
-        payload={"agent_id": AGENT_UUID},
-        label="Default Agent",
-        tooltip=AGENT_UUID
-    ))
     
     # Ask user to select an agent
     res = await cl.AskActionMessage(
@@ -51,29 +39,18 @@ async def on_chat_start():
     print(res)
 
     if res:
-        selected_agent_uuid = res["payload"]["agent_id"]
+        selected_settings = res["payload"]
     else:
         # Fallback to default if no selection
-        selected_agent_uuid = AGENT_UUID
+        selected_settings = sessions["Main Agent"]
     
-    print(selected_agent_uuid)
     # Create session with selected agent
     session = await julep_client.sessions.create(
-        agent=selected_agent_uuid,
-        system_template=None,
-        recall_options={
-            "mode": "hybrid",
-            "num_search_messages": 4,
-            "max_query_length": 1000,
-            "confidence": 0.5,
-            "alpha": 0.5,
-            "limit": 10,
-            "mmr_strength": 0.5,
-        },
+        **selected_settings
     )
     session_id = session.id
 
-    print(f"Session created with agent: {selected_agent_uuid}")
+    print(f"Session created with agent settings: {selected_settings}")
 
     await cl.Message(content="Hello, how can I help you today?").send()
 
