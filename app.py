@@ -113,20 +113,19 @@ async def on_message(message: cl.Message):
                 title = doc.title if doc.title else f'Document {i+1}'
                 # Create a sanitized name from the title (for reference)
                 element_name = doc.title
-                if len(element_name) > 16:
-                    element_name = element_name[:16] + "..."
                 element_names.append(element_name)
 
-                # Add Text element with markdown content
+                # Add Text element with markdown content and improved formatting
                 step.elements.append(
                     cl.Text(
-                        name=element_name,
-                        content=doc.snippet.content,
-                        display="side"  # This will enable pagination
+                        name=element_name,  # Added document emoji for visual hierarchy
+                        content=doc.snippet.content,  
+                        display="side",
+                        size="medium",
                     ))
 
             # Set the step's content directly and then update
-            step.output = "Retrieved documents: " + ", ".join(element_names)
+            step.output = "📚 **Retrieved Products:**\n• " + "\n• ".join(element_names)
             await step.update()
 
         returned_content = response.choices[0].message.content
