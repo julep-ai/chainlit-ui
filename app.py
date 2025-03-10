@@ -3,7 +3,7 @@ import chainlit as cl
 from julep import AsyncJulep
 import os
 import dotenv
-from sessions import sessions
+from sessions import sessions, system_templates
 
 dotenv.load_dotenv(override=True)
 
@@ -44,6 +44,27 @@ async def on_chat_start():
         # Fallback to default if no selection
         selected_settings = sessions["Main Agent"]
     
+    system_template_actions = [
+        cl.Action(
+            name=system_template_name,
+            payload={"system_template": system_template_value},
+            label=system_template_name
+        )
+        for system_template_name, system_template_value in system_templates.items()
+    ]
+
+    res = await cl.AskActionMessage(
+        content="Please select a system template:",
+        actions=system_template_actions,
+    ).send()
+
+    if res:
+        selected_system_template = res["payload"]["system_template"]
+    else:
+        selected_system_template = None
+
+    selected_settings["system_template"] = selected_system_template
+
     # Create session with selected agent
     session = await julep_client.sessions.create(
         **selected_settings
