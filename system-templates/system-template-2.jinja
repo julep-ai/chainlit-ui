@@ -22,7 +22,7 @@ Relevant documents (based on website search):
   {%- endif -%}
   {%- if doc.metadata.price and doc.metadata.price.min and doc.metadata.price.currency -%}
   Price: {{ doc.metadata.price.min }} {{ doc.metadata.price.currency }} {{NEWLINE}}
-  {%- elif doc.metadata.price.effective.min and doc.metadata.price.effective.currency_symbol-%}
+  {%- elif doc.metadata.price.effective and doc.metadata.price.effective.min and doc.metadata.price.effective.currency_symbol-%}
   Price: {{ doc.metadata.price.effective.min }} {{ doc.metadata.price.effective.currency_symbol }} {{NEWLINE}}
   {%- endif -%}
   {%- if doc.metadata.rating and doc.metadata.rating != 0 -%}
