@@ -42,7 +42,7 @@ async def on_chat_start():
         selected_settings = res["payload"]
     else:
         # Fallback to default if no selection
-        selected_settings = sessions["Main Agent"]
+        selected_settings = sessions["Tia (Hybrid + MMR)"]
     
     system_template_actions = [
         cl.Action(

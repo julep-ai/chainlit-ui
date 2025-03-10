@@ -79,7 +79,7 @@ custom_js = "/public/analytics.js"
 # Specify a custom build directory for the frontend.
 # This can be used to customize the frontend code.
 # Be careful: If this is a relative path, it should not start with a slash.
-custom_build = "./public"
+custom_build = "/public"
 
 # Specify optional one or more custom links in the header.
 # [[UI.header_links]]
