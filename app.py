@@ -84,14 +84,15 @@ async def on_message(message: cl.Message):
     async with cl.Step(name="Documents") as step:
         # Step is sent as soon as the context manager is entered
         global session_id
-        response = await julep_client.sessions.chat(session_id=session_id,
-                                                    messages=[{
-                                                        "role":
-                                                        "user",
-                                                        "content":
-                                                        message.content
-                                                    }],
-                                                    recall=True)
+        response = await julep_client.sessions.chat(
+            session_id=session_id,
+            messages=[{
+                "role": "user",
+                "content": message.content
+                }],
+            model="claude-3.7-sonnet",
+            recall=True,
+        )
 
         docs = response.docs
         if docs:
