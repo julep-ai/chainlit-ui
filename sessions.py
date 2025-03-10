@@ -41,7 +41,7 @@ sessions = {
 }
 
 system_templates = {
-    "Tia 1": system_template1,
-    "Tia 2": system_template2,
-    "Tia 3": system_template3,
+    "Tia 1 (professional)": system_template1,
+    "Tia 2 (casual)": system_template2,
+    "Tia 3 (casual + displays tables for product recommendations)": system_template3,
 }

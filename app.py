@@ -32,7 +32,7 @@ async def on_chat_start():
     
     # Ask user to select an agent
     res = await cl.AskActionMessage(
-        content="Please select an agent to chat with:",
+        content="Please select the search options you want to use:",
         actions=agent_actions,
     ).send()
     
@@ -54,7 +54,7 @@ async def on_chat_start():
     ]
 
     res = await cl.AskActionMessage(
-        content="Please select a system template:",
+        content="Please select the conversation style you want to use:",
         actions=system_template_actions,
     ).send()
 
