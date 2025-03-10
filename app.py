@@ -33,7 +33,7 @@ async def on_chat_start():
     
     # Ask user to select an agent
     res = await cl.AskActionMessage(
-        content="Please select the search options you want to use:",
+        content="Please select the search options you want to use (check the README for more information):",
         actions=agent_actions,
         timeout=SELECTION_TIMEOUT,
     ).send()
@@ -86,7 +86,7 @@ async def on_message(message: cl.Message):
     # returned docs (response.docs)
     # if data frame, it's better
 
-    async with cl.Step(name="Documents") as step:
+    async with cl.Step(name="document search") as step:
         # Step is sent as soon as the context manager is entered
         global session_id
         response = await julep_client.sessions.chat(
