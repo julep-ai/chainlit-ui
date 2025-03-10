@@ -9,6 +9,7 @@ dotenv.load_dotenv(override=True)
 
 JULEP_API_KEY = os.getenv("JULEP_API_KEY")
 AGENT_UUID = os.getenv("AGENT_UUID")
+SELECTION_TIMEOUT = 99999
 
 ################################################################################
 
@@ -34,7 +35,7 @@ async def on_chat_start():
     res = await cl.AskActionMessage(
         content="Please select the search options you want to use:",
         actions=agent_actions,
-        timeout=99999,  # There's no way to disable timeout, so we set it to a very long time
+        timeout=SELECTION_TIMEOUT,
     ).send()
     
     print(res)
@@ -57,7 +58,7 @@ async def on_chat_start():
     res = await cl.AskActionMessage(
         content="Please select the conversation style you want to use:",
         actions=system_template_actions,
-        timeout=99999,  # There's no way to disable timeout, so we set it to a very long time
+        timeout=SELECTION_TIMEOUT,
     ).send()
 
     if res:
