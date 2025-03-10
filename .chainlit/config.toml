@@ -52,9 +52,13 @@ edit_message = true
     sample_rate = 24000
 
 [UI]
-# Name of the assistant.
-name = "Assistant"
+# Name of the app and chatbot.
+name = "Tira Beauty Assistant"
 
+# Description of the app and chatbot. This is used for HTML tags.
+description = "TIRA Beauty AI Assistant (Julep)"
+
+github = "https://gist.github.com/creatorrr/97393bac5a2aae4b7cc1b865fa9d5fbb"
 # default_theme = "dark"
 
 # layout = "wide"

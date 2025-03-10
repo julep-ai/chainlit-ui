@@ -83,8 +83,13 @@ async def on_chat_start():
     selected_search_options.pop('system_template')
     print(f"Session settings: {selected_search_options}")
 
-    await cl.Message(content="Hello, how can I help you today?").send()
-
+    await cl.Message(content="""👋 Hi! I'm TIRA Beauty's AI Assistant powered by Julep AI
+    \nI can help you:
+    \n• Find beauty products that match your needs
+    \n• Learn about skincare/makeup ingredients
+    \n• Get personalized beauty advice and routines
+    \n• Check product availability
+    \nHow can I assist you with your beauty questions today?""").send()
 
 @cl.on_message
 async def on_message(message: cl.Message):
@@ -133,3 +138,8 @@ async def on_message(message: cl.Message):
         returned_content = response.choices[0].message.content
 
         await cl.Message(content=returned_content).send()
+
+
+@cl.on_chat_end
+async def on_chat_end():
+    await cl.Message(content="Thanks for using TIRA Beauty AI Assistant powered by Julep AI! Have a great day!").send()

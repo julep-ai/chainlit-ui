@@ -1,14 +1,45 @@
-# Welcome to Chainlit! 🚀🤖
+## Welcome to TIRA Beauty AI Assistant (Julep) ✨
 
-Hi there, Developer! 👋 We're excited to have you on board. Chainlit is a powerful tool designed to help you prototype, debug and share applications built on top of LLMs.
+TIRA Beauty AI Assistant is an intelligent beauty advisor built by Julep AI that helps you discover beauty products, understand ingredients, and get personalized beauty advice.
 
-## Useful Links 🔗
+### Getting Started 🚀
 
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
+1. **Select Search Options**: First, choose the AI agent with your preferred search capabilities
+2. **Choose Conversation Style**: Select a system template that defines how the assistant will interact with you
+3. **Start Chatting**: Ask questions about beauty products, ingredients, or get personalized recommendations!
 
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
+## What You Can Do 💬
 
-## Welcome screen
+- **Discover Products**: Find beauty products from TIRA's catalog (~1K products)
+- **Learn About Ingredients**: Get explanations about skincare and makeup ingredients
+- **Get Personalized Advice**: Receive customized beauty and skincare routines
+- **Compare Products**: Understand differences between similar items
+- **Check Availability**: Get real-time product availability information
 
-To modify the welcome screen, edit the `chainlit.md` file at the root of your project. If you do not want a welcome screen, just leave this file empty.
+## Key Features 🔑
+
+- **Smart Search**: Uses hybrid search combining vector and text-based approaches.
+- **RAG Pipeline**: Leverages Retrieval-Augmented Generation to provide accurate, factual responses.
+- **Product Knowledge**: Current deployed agent contains ~1K products.
+- **Beauty Expertise**: Can explain ingredients, suggest routines, and compare products.
+- **Real-time Data**: Integrates with TIRA's systems to check stock and availability.
+
+## Technical Details 🔧
+
+This assistant is powered by:
+
+- **Julep AI** Builds the chatbot and orchestrates the conversation
+- **Claude 3.7 Sonnet** as the base model for the chatbot.
+- **Claude 3.5 Haiku / gpt-4o mini** for contextualization
+- **openai text-embeddings-3-large** for embedding
+- **Hybrid RAG Search** combining vector, BM25, and trigram search with MMR for diverse results
+- **Automated product indexing and FAQ generation**
+
+### Tips for Best Results 💡
+
+- Be specific about your skin type, concerns, or preferences
+- Ask about specific ingredients you're curious about
+- Request personalized routines for your unique needs
+- Compare similar products to find your perfect match
+
+Enjoy your beauty consultation experience with TIRA Beauty AI Assistant!
