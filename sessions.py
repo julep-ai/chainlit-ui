@@ -7,7 +7,7 @@ agent_id = os.getenv("AGENT_UUID")
 
 system_template1 = open("system-templates/system-template-1.jinja").read()
 system_template2 = open("system-templates/system-template-2.jinja").read()
-
+system_template3 = open("system-templates/system-template-3.jinja").read()
 session1 = {
     "agent": agent_id,
     "system_template": None,
@@ -41,6 +41,7 @@ sessions = {
 }
 
 system_templates = {
-    "Default System Template": system_template1,
-    "Modified System Template": system_template2,
+    "Tia 1": system_template1,
+    "Tia 2": system_template2,
+    "Tia 3": system_template3,
 }

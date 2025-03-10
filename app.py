@@ -71,7 +71,9 @@ async def on_chat_start():
     )
     session_id = session.id
 
-    print(f"Session created with agent settings: {selected_settings}")
+    print(f"Session created with system template: {selected_system_template}")
+    selected_settings.pop('system_template')
+    print(f"Session settings: {selected_settings}")
 
     await cl.Message(content="Hello, how can I help you today?").send()
 
