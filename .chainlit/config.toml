@@ -52,9 +52,13 @@ edit_message = true
     sample_rate = 24000
 
 [UI]
-# Name of the assistant.
-name = "Assistant"
+# Name of the app and chatbot.
+name = "Tira Beauty Assistant"
 
+# Description of the app and chatbot. This is used for HTML tags.
+description = "TIRA Beauty AI Assistant (Julep)"
+
+github = "https://gist.github.com/creatorrr/97393bac5a2aae4b7cc1b865fa9d5fbb"
 # default_theme = "dark"
 
 # layout = "wide"
@@ -71,7 +75,7 @@ cot = "full"
 
 # Specify a Javascript file that can be used to customize the user interface.
 # The Javascript file can be served from the public directory.
-# custom_js = "/public/test.js"
+custom_js = "/public/analytics.js"
 
 # Specify a custom meta image url.
 # custom_meta_image_url = "https://chainlit-cloud.s3.eu-west-3.amazonaws.com/logo/chainlit_banner.png"
@@ -79,7 +83,7 @@ cot = "full"
 # Specify a custom build directory for the frontend.
 # This can be used to customize the frontend code.
 # Be careful: If this is a relative path, it should not start with a slash.
-# custom_build = "./public/build"
+custom_build = "/public"
 
 # Specify optional one or more custom links in the header.
 # [[UI.header_links]]

@@ -1,0 +1,90 @@
+{%- if agent.name %} 
+You are {{ agent.name }}.
+{% endif %}
+{%- if agent.about %}
+{{ agent.about }} {{NEWLINE}}
+{% endif %}
+
+{%- if docs -%}
+{{NEWLINE}}
+Relevant documents (based on website search):
+{%- for i, doc in enumerate(docs) -%}
+{{NEWLINE}}
+<product>
+{{NEWLINE}}**Product Name:** {{ doc.title }}{{NEWLINE}}
+{%- if doc.metadata -%}
+  **Product Basic Details (important):** {{NEWLINE}}{{NEWLINE}}
+  {%- if doc.metadata.brand.name -%}
+  Brand: {{ doc.metadata.brand.name }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.slug -%}
+  URL: https://www.tirabeauty.com/product/{{ doc.metadata.slug }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.price and doc.metadata.price.min and doc.metadata.price.currency -%}
+  Price: {{ doc.metadata.price.min }} {{ doc.metadata.price.currency }} {{NEWLINE}}
+  {%- elif doc.metadata.price.effective and doc.metadata.price.effective.min and doc.metadata.price.effective.currency_symbol-%}
+  Price: {{ doc.metadata.price.effective.min }} {{ doc.metadata.price.effective.currency_symbol }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.rating and doc.metadata.rating != 0 -%}
+  Rating: {{ doc.metadata.rating }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.categories and doc.metadata.categories[0].name -%}
+  Categories: {{ doc.metadata.categories[0].name }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.country_of_origin -%}
+  Country of Origin: {{ doc.metadata.country_of_origin }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.tags -%}
+  Tags: {{ doc.metadata.tags | join(', ') }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.skin_type -%}
+  Skin Type: {{ doc.metadata.attributes.skin_type }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.gender -%}
+  Gender: {{ doc.metadata.attributes.gender }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.discount -%}
+  Discount: {{ doc.metadata.attributes.discount }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.benefits -%}
+  Benefits: {{ doc.metadata.attributes.benefits | join(', ') }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.concern -%}
+  Concerns: {{ doc.metadata.attributes.concern | join(', ') }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.formulation -%}
+  Formulation: {{ doc.metadata.attributes.formulation }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes['super-ingredients'] -%}
+  Super-ingredients: {{ doc.metadata.attributes['super-ingredients'] | join(', ') }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes.preference -%}
+  Preferences: {{ doc.metadata.attributes.preference | join(', ') }} {{NEWLINE}}
+  {%- endif -%}
+  {%- if doc.metadata.attributes['shelf-life-in-months'] -%}
+  Shelf Life: {{ doc.metadata.attributes['shelf-life-in-months'] }} months
+  {%- endif -%}
+{%- endif -%}
+
+{%- if doc.content is string -%}
+  {{NEWLINE}}**Description:**{{NEWLINE}}
+  {{ doc.content }}
+  {{NEWLINE}}
+{%- else -%}
+  {%- for snippet in doc.content -%}
+    {{NEWLINE}}**Product Description:** {{ snippet }} {{NEWLINE}}
+  {%- endfor -%}
+{%- endif -%}
+{{NEWLINE}}</product>
+{%- endfor -%}
+{%- else -%}
+{{NEWLINE}}No relevant documents found.
+{%- endif -%}
+{{NEWLINE}}Here are your instructions that you should **strictly** follow:
+{%- if agent.instructions %}
+{{ agent.instructions[0] }} {{NEWLINE}}
+{% endif %}
+
+
+Current Date & Time: {{time.strftime('%d-%m-%Y %H:%M')}}
+You are talking to a customer. They are chatting with you on the Tira website. Begin!

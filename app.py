@@ -9,6 +9,7 @@ dotenv.load_dotenv(override=True)
 
 JULEP_API_KEY = os.getenv("JULEP_API_KEY")
 AGENT_UUID = os.getenv("AGENT_UUID")
+SELECTION_TIMEOUT = 99999
 
 ################################################################################
 
@@ -31,19 +32,22 @@ async def on_chat_start():
     ]
     
     # Ask user to select an agent
-    res = await cl.AskActionMessage(
-        content="Please select an agent to chat with:",
+    search_options_selection_message = cl.AskActionMessage(
+        content="Please select the search options you want to use (check the README for more information):",
         actions=agent_actions,
-    ).send()
-    
-    print(res)
+        timeout=SELECTION_TIMEOUT,
+    )
 
-    if res:
-        selected_settings = res["payload"]
+    selected_search_options_payload = await search_options_selection_message.send()
+
+    if selected_search_options_payload:
+        selected_search_options = selected_search_options_payload["payload"]
+        # Remove the selection message from UI
+        await search_options_selection_message.remove()
     else:
         # Fallback to default if no selection
-        selected_settings = sessions["Main Agent"]
-    
+        selected_search_options = sessions["Tia (Hybrid + MMR)"]
+
     system_template_actions = [
         cl.Action(
             name=system_template_name,
@@ -53,35 +57,40 @@ async def on_chat_start():
         for system_template_name, system_template_value in system_templates.items()
     ]
 
-    res = await cl.AskActionMessage(
-        content="Please select a system template:",
+    template_selection_message = cl.AskActionMessage(
+        content="Please select the conversation style you want to use:",
         actions=system_template_actions,
-    ).send()
+        timeout=SELECTION_TIMEOUT,
+    )
+    
+    selected_system_template_payload = await template_selection_message.send()
 
-    if res:
-        selected_system_template = res["payload"]["system_template"]
+    if selected_system_template_payload:
+        selected_system_template = selected_system_template_payload["payload"]["system_template"]
+        # Remove the selection message from UI
+        await template_selection_message.remove()
     else:
         selected_system_template = None
-
-    selected_settings["system_template"] = selected_system_template
+    selected_search_options["system_template"] = selected_system_template
 
     # Create session with selected agent
     session = await julep_client.sessions.create(
-        **selected_settings
+        **selected_search_options
     )
     session_id = session.id
 
-    print(f"Session created with agent settings: {selected_settings}")
+    print(f"Session created with system template: {selected_system_template}")
+    selected_search_options.pop('system_template')
+    print(f"Session settings: {selected_search_options}")
 
-    await cl.Message(content="Hello, how can I help you today?").send()
-
+    await cl.Message(content="""👋 Hi! I'm TIRA Beauty's AI Assistant powered by Julep AI. \nHow can I assist you with your beauty questions today?""").send()
 
 @cl.on_message
 async def on_message(message: cl.Message):
     # returned docs (response.docs)
     # if data frame, it's better
 
-    async with cl.Step(name="Documents") as step:
+    async with cl.Step(name="document search") as step:
         # Step is sent as soon as the context manager is entered
         global session_id
         response = await julep_client.sessions.chat(
@@ -104,22 +113,26 @@ async def on_message(message: cl.Message):
                 title = doc.title if doc.title else f'Document {i+1}'
                 # Create a sanitized name from the title (for reference)
                 element_name = doc.title
-                if len(element_name) > 16:
-                    element_name = element_name[:16] + "..."
                 element_names.append(element_name)
 
-                # Add Text element with markdown content
+                # Add Text element with markdown content and improved formatting
                 step.elements.append(
                     cl.Text(
-                        name=element_name,
-                        content=doc.snippet.content,
-                        display="side"  # This will enable pagination
+                        name=element_name,  # Added document emoji for visual hierarchy
+                        content=doc.snippet.content,  
+                        display="side",
+                        size="medium",
                     ))
 
             # Set the step's content directly and then update
-            step.output = "Retrieved documents: " + ", ".join(element_names)
+            step.output = "📚 **Retrieved Products:**\n• " + "\n• ".join(element_names)
             await step.update()
 
         returned_content = response.choices[0].message.content
 
         await cl.Message(content=returned_content).send()
+
+
+@cl.on_chat_end
+async def on_chat_end():
+    await cl.Message(content="Thanks for using TIRA Beauty AI Assistant powered by Julep AI! Have a great day!").send()
