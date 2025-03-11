@@ -1,10 +1,8 @@
-from http.cookies import SimpleCookie
 import chainlit as cl
 from julep import AsyncJulep
 import os
 import dotenv
 from sessions import sessions, system_templates
-from uuid import uuid4
 
 from utils import get_or_create_session_id
 
@@ -18,12 +16,10 @@ SELECTION_TIMEOUT = 99999
 
 julep_client = AsyncJulep(api_key=JULEP_API_KEY, environment="dev")
 
-session_id = str(uuid4())
-
 @cl.on_chat_start
 async def on_chat_start():
     # Get or create session ID
-    session_id = await get_or_create_session_id()
+    session_id = get_or_create_session_id()
 
     # Create actions for each agent
     agent_actions = [

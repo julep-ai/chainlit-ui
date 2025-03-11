@@ -2,7 +2,7 @@ import chainlit as cl
 from uuid import uuid4
 
 
-async def get_or_create_session_id():
+def get_or_create_session_id():
     # Try to get existing session ID from user session
     session_id = cl.user_session.get("julep_session_id")
 
