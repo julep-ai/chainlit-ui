@@ -5,7 +5,7 @@ TIRA Beauty AI Assistant is an intelligent beauty advisor built by Julep AI that
 ## Getting Started 🚀
 
 1. **Select Search Options**: First, choose the AI agent with your preferred search capabilities
-2. **Choose Conversation Style**: Select a system template that defines how the assistant will interact with you
+2. **Choose Conversation Style**: Select a [system template](https://docs.julep.ai/docs/concepts/sessions#system-template) that defines how the assistant will interact with you. Please refer to this [gist](https://gist.github.com/HamadaSalhab/debf26c2e917ff6d5a01c0ceab55f176) to see the different system templates available in this demo.
 3. **Start Chatting**: Ask questions about beauty products, ingredients, or get personalized recommendations!
 
 ## What You Can Do 💬
