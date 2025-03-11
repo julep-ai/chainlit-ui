@@ -1,9 +1,12 @@
-import asyncio
+from http.cookies import SimpleCookie
 import chainlit as cl
 from julep import AsyncJulep
 import os
 import dotenv
 from sessions import sessions, system_templates
+from uuid import uuid4
+
+from utils import get_or_create_session_id
 
 dotenv.load_dotenv(override=True)
 
@@ -15,12 +18,13 @@ SELECTION_TIMEOUT = 99999
 
 julep_client = AsyncJulep(api_key=JULEP_API_KEY, environment="dev")
 
-session_id = None
+session_id = str(uuid4())
 
 @cl.on_chat_start
 async def on_chat_start():
-    global session_id
-    
+    # Get or create session ID
+    session_id = await get_or_create_session_id()
+
     # Create actions for each agent
     agent_actions = [
         cl.Action(
@@ -74,10 +78,10 @@ async def on_chat_start():
     selected_search_options["system_template"] = selected_system_template
 
     # Create session with selected agent
-    session = await julep_client.sessions.create(
+    await julep_client.sessions.create_or_update(
+        session_id=session_id,
         **selected_search_options
     )
-    session_id = session.id
 
     print(f"Session created with system template: {selected_system_template}")
     selected_search_options.pop('system_template')
@@ -96,9 +100,19 @@ async def on_chat_start():
     
 @cl.on_message
 async def on_message(message: cl.Message):
+    # returned docs (response.docs)
+    # if data frame, it's better
+
+    # Get session ID from user session
+    session_id = cl.user_session.get("julep_session_id")
+
+    if not session_id:
+        # Handle case where session ID is missing
+        await cl.Message(content="Session expired. Please refresh the page.").send()
+        return
+
     async with cl.Step(name="document search") as step:
         # Step is sent as soon as the context manager is entered
-        global session_id
         response = await julep_client.sessions.chat(
             session_id=session_id,
             messages=[{
