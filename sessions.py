@@ -9,6 +9,7 @@ try:
     system_template1 = open("system-templates/system-template-1.jinja").read()
     system_template2 = open("system-templates/system-template-2.jinja").read()
     system_template3 = open("system-templates/system-template-3.jinja").read()
+    system_template4 = open("system-templates/system-template-4.jinja").read()
 except FileNotFoundError as e:
     raise Exception(f"Required system template file not found: {e.filename}")
 
@@ -48,4 +49,5 @@ system_templates = {
     "Tia 1 (Professional)": system_template1,
     "Tia 2 (Casual)": system_template2,
     "Tia 3 (Casual + Displays Tables for Product Recommendations)": system_template3,
+    "Tia 4 (Friendly)": system_template4,
 }
