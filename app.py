@@ -87,9 +87,6 @@ async def on_chat_start():
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    # returned docs (response.docs)
-    # if data frame, it's better
-
     async with cl.Step(name="document search") as step:
         # Step is sent as soon as the context manager is entered
         global session_id
@@ -126,6 +123,10 @@ async def on_message(message: cl.Message):
 
             # Set the step's content directly and then update
             step.output = "📚 **Retrieved Products:**\n• " + "\n• ".join(element_names)
+            await step.update()
+
+        else:
+            step.output = "No products found"
             await step.update()
 
         returned_content = response.choices[0].message.content
