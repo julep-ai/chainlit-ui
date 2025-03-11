@@ -83,8 +83,17 @@ async def on_chat_start():
     selected_search_options.pop('system_template')
     print(f"Session settings: {selected_search_options}")
 
-    await cl.Message(content="""👋 Hi! I'm TIRA Beauty's AI Assistant powered by Julep AI. \nHow can I assist you with your beauty questions today?""").send()
-
+    response = await julep_client.sessions.chat(
+        session_id=session_id,
+        messages=[{
+            "role": "user",
+            "content": "hi"
+            }],
+        model="claude-3.7-sonnet",
+        recall=False,
+    )
+    await cl.Message(content=response.choices[0].message.content).send()
+    
 @cl.on_message
 async def on_message(message: cl.Message):
     async with cl.Step(name="document search") as step:
