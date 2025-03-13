@@ -22,7 +22,7 @@ session_hybrid_mmr = {
         "confidence": 0.7,
         "alpha": 0.5,
         "limit": 10,
-        "mmr_strength": 0.7,
+        "mmr_strength": 0.5,
     },
 }
 
