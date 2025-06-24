@@ -83,22 +83,35 @@ async def on_chat_start():
     selected_search_options.pop('system_template')
     print(f"Session settings: {selected_search_options}")
 
-    response = await julep_client.sessions.chat(
+    # Create message for streaming the initial response
+    msg = cl.Message(content="")
+    await msg.send()
+
+    # Make streaming chat request for initial greeting
+    response_stream = await julep_client.sessions.chat(
         session_id=session_id,
         messages=[{
             "role": "user",
             "content": "hi"
-            }],
+        }],
         model="claude-3.7-sonnet",
         recall=False,
+        stream=True,  # Enable streaming
     )
-    await cl.Message(content=response.choices[0].message.content).send()
+
+    # Stream the initial response chunks
+    async for chunk in response_stream:
+        # Stream content tokens
+        if hasattr(chunk, 'choices') and chunk.choices:
+            delta_content = chunk.choices[0].delta.content
+            if delta_content:
+                await msg.stream_token(delta_content)
+
+    # Update message when streaming is complete
+    await msg.update()
     
 @cl.on_message
 async def on_message(message: cl.Message):
-    # returned docs (response.docs)
-    # if data frame, it's better
-
     # Get session ID from user session
     session_id = cl.user_session.get("julep_session_id")
 
@@ -108,33 +121,52 @@ async def on_message(message: cl.Message):
         return
 
     async with cl.Step(name="document search") as step:
-        # Step is sent as soon as the context manager is entered
-        response = await julep_client.sessions.chat(
+        # Create message for streaming
+        msg = cl.Message(content="")
+        await msg.send()
+
+        # Make streaming chat request
+        response_stream = await julep_client.sessions.chat(
             session_id=session_id,
             messages=[{
                 "role": "user",
                 "content": message.content
-                }],
+            }],
             model="claude-3.7-sonnet",
             recall=True,
+            stream=True,
         )
 
-        docs = response.docs
+        docs = []
+        # Stream the response chunks
+        async for chunk in response_stream:
+            # Collect docs if available
+            if hasattr(chunk, 'docs') and chunk.docs:
+                docs = chunk.docs
+            
+            # Stream content tokens
+            if hasattr(chunk, 'choices') and chunk.choices:
+                delta_content = chunk.choices[0].delta.content
+                if delta_content:
+                    await msg.stream_token(delta_content)
+
+        # Update message when streaming is complete
+        await msg.update()
+
+        # Handle document display
         if docs:
             # Create elements for each document
-            elements = []
             element_names = []
 
             for i, doc in enumerate(docs):
                 title = doc.title if doc.title else f'Document {i+1}'
-                # Create a sanitized name from the title (for reference)
                 element_name = doc.title
                 element_names.append(element_name)
 
                 # Add Text element with markdown content and improved formatting
                 step.elements.append(
                     cl.Text(
-                        name=element_name,  # Added document emoji for visual hierarchy
+                        name=element_name,
                         content=doc.snippet.content,  
                         display="side",
                         size="medium",
@@ -143,15 +175,9 @@ async def on_message(message: cl.Message):
             # Set the step's content directly and then update
             step.output = "📚 **Retrieved Products:**\n• " + "\n• ".join(element_names)
             await step.update()
-
         else:
             step.output = "No products found"
             await step.update()
-
-        returned_content = response.choices[0].message.content
-
-        await cl.Message(content=returned_content).send()
-
 
 @cl.on_chat_end
 async def on_chat_end():
